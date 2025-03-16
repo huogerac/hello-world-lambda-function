@@ -17,9 +17,15 @@ def lambda_handler(event, context):
             "body": json.dumps({"error": "Invalid request"})
         }
 
+    message = {}
     if isinstance(event["body"], str):
         try:
             body = json.loads(event["body"])
+            message = {"message": f"Recebido: {body}"}
+
+            if body.get("message") == "ping":
+                message = {"message": "pong!"}
+
         except json.JSONDecodeError:
             logger.error("Invalid JSON format in body")
             return {
@@ -29,7 +35,8 @@ def lambda_handler(event, context):
     else:
         body = event["body"]
 
-    return {
+    response = {
         "statusCode": 200,
-        "body": json.dumps({"message": f"Recebido: {body}"})
+        "body": json.dumps(message )
     }
+    return response

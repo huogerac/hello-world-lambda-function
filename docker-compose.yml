@@ -1,0 +1,8 @@
+services:
+
+  hello_lambda:
+    build: ./
+    mem_limit: 2g
+    privileged: true
+    ports:
+      - '9000:8080'

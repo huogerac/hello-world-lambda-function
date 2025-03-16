@@ -36,3 +36,20 @@ def test_should_return_400_for_invalid_request(lambda_context):
     # THEN
     assert response["statusCode"] == 400
     assert body["error"] == "Invalid JSON format"
+
+
+def test_should_return_pong_when_it_sends_ping(lambda_context):
+    """Test if Lambda function returns status 200"""
+
+    # GIVEN a correct request
+    event = {
+        "body": json.dumps({"message": "ping"})
+    }
+    
+    # WHEN we call the lambda
+    response = lambda_handler(event, lambda_context)
+    body = json.loads(response["body"])
+
+    # THEN
+    assert response["statusCode"] == 200
+    assert body["message"] == "pong!"
