@@ -1,0 +1,28 @@
+---
+
+- name: Update Lambda function code (Deploy new ZIP)
+  command: >-
+    aws lambda update-function-code
+    --function-name "{{ lambda_function_name }}"
+    --s3-bucket "{{ s3_bucket_name }}"
+    --s3-key "{{ target_zip_name }}"
+    --region "{{ aws_region }}"
+  environment:
+    AWS_DEFAULT_REGION: "{{ aws_region }}"
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
+
+# - name: Update Lambda function code (Deploy new ZIP)
+#   community.aws.aws_lambda:
+#     name: "{{ lambda_function_name }}"
+#     s3_bucket: "{{ s3_bucket_name }}"
+#     s3_key: "{{ target_zip_name }}"
+#     region: "{{ aws_region }}"
+#     state: present
+#     #role: "lambda_function_arn"
+#     #handler: "{{ lambda_function_name }}.lambda_handler"
+#     #runtime: "{{ lambda_runtime }}"
+#   environment:
+#     AWS_DEFAULT_REGION: "{{ aws_region }}"
+#     AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
+#     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"

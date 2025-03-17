@@ -1,0 +1,8 @@
+- name: Deploy AWS Lambda Function
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  roles:
+    - { role: lambda_zip, tags: [lambda_zip] }
+    - { role: lambda_update, tags: [lambda_update] }

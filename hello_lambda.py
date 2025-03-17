@@ -21,11 +21,6 @@ def lambda_handler(event, context):
     if isinstance(event["body"], str):
         try:
             body = json.loads(event["body"])
-            message = {"message": f"Recebido: {body}"}
-
-            if body.get("message") == "ping":
-                message = {"message": "pong!"}
-
         except json.JSONDecodeError:
             logger.error("Invalid JSON format in body")
             return {
@@ -34,6 +29,11 @@ def lambda_handler(event, context):
             }
     else:
         body = event["body"]
+
+    message = {"message": f"Recebido: {body}"}
+
+    if body.get("message") == "ping":
+        message = {"message": "🏓 PONG!"}
 
     response = {
         "statusCode": 200,

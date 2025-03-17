@@ -1,0 +1,78 @@
+- name: Ensure build directory exists in the project root
+  file:
+    path: "{{ playbook_dir }}/../../lambda_build"
+    state: directory
+
+- name: Install Python dependencies into build folder
+  pip:
+    requirements: "{{ playbook_dir }}/../../requirements.txt"
+    virtualenv: "{{ playbook_dir }}/../../lambda_build/venv"
+    virtualenv_python: python3.11
+
+- name: Copy Lambda function code to build folder
+  copy:
+    src: "{{ playbook_dir }}/../../{{ lambda_module_name }}"
+    dest: "{{ playbook_dir }}/../../lambda_build/"
+
+- name: Create deployment package (ZIP Lambda and dependencies)
+  shell: |
+    cd "{{ playbook_dir }}/../../lambda_build"
+    zip -r ../{{ target_zip_name }} . -x "venv/*"
+
+- name: Upload package to S3
+  amazon.aws.s3_object:
+    bucket: "{{ s3_bucket_name }}"
+    object: "{{ target_zip_name }}"
+    src: "{{ playbook_dir }}/../../{{ target_zip_name }}"
+    mode: put
+  register: s3_upload
+
+# - name: Deploy Lambda function from S3
+#   community.aws.lambda:
+#     name: webhook-lambda
+#     state: present
+#     region: us-east-1
+#     role: "arn:aws:iam::123456789012:role/lambda-execution-role"
+#     handler: hello_lambda.lambda_handler
+#     runtime: python3.11
+#     s3_bucket: "{{ s3_bucket_name }}"
+#     s3_key: "{{ target_zip_name }}"
+#     environment_variables:
+#       REGION: us-east-1
+#     timeout: 30
+#     memory_size: 128
+#   when: s3_upload.changed
+
+# - name: Clean up build folder
+#   file:
+#     path: "{{ playbook_dir }}/../../../lambda_build"
+#     state: absent
+#   when: s3_upload.changed
+
+
+
+
+# - name: Package Lambda function
+#   archive:
+#     path: ../aws_lambdas/
+#     dest: /tmp/{{ target_zip_name }}
+#     format: zip
+
+# - name: Deploy Lambda function
+#   aws_lambda:
+#     name: webhook-lambda
+#     state: present
+#     region: us-east-1
+#     role: arn:aws:iam::123456789012:role/lambda-execution-role
+#     handler: lambda_function.lambda_handler
+#     runtime: python3.11
+#     zip_file: /tmp/{{ target_zip_name }}
+#     environment_variables:
+#       REGION: us-east-1
+#     timeout: 30
+#     memory_size: 128
+
+# - name: Clean up package
+#   file:
+#     path: /tmp/{{ target_zip_name }}
+#     state: absent

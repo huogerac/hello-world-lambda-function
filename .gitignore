@@ -1,3 +1,9 @@
 __pycache__/
 *.py[cod]
 .venv/
+lambda_build/
+*.zip
+*.tfstate
+.terraform
+.terraform.lock.*
+terraform.tfstate.backup
